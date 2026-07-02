@@ -182,7 +182,7 @@ export class MarkdownPreviewManager extends Disposable {
 		);
 	}
 
-	private _renderContent(): void {
+	private async _renderContent(): Promise<void> {
 		if (!this._webviewInput || !this._currentResource) {
 			return;
 		}
@@ -195,7 +195,8 @@ export class MarkdownPreviewManager extends Disposable {
 		const baseDir = URI.joinPath(this._currentResource, '..');
 		const textModel = fileModel.textEditorModel;
 		const text = textModel.getValue();
-		const parsedHtml = new marked.Marked().parse(text) as string;
+
+		const parsedHtml = marked.parse(text) as string;
 		const htmlBody = rewriteImageSrcs(parsedHtml, baseDir);
 
 		const html = `<!DOCTYPE html>
@@ -218,6 +219,18 @@ export class MarkdownPreviewManager extends Disposable {
 		}
 		pre {
 			background-color: var(--vscode-textCodeBlock-background);
+			white-space: pre;
+		}
+		pre code {
+			background-color: transparent;
+			padding: 0;
+			border-radius: 0;
+			color: var(--vscode-editor-foreground);
+		}
+		h1, h2, h3, h4, h5, h6 {
+			font-weight: bold;
+			border-bottom: 1px solid;
+			padding-bottom: 0.3em;
 		}
 	</style>
 	<style>${DEFAULT_MARKDOWN_STYLES}</style>
